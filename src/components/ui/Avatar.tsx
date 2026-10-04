@@ -91,7 +91,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
             loading="lazy"
           />
         ) : name ? (
-          <span className={cn(sizeClass, generateAvatarColor(name))}>
+          <span className={cn(sizeClass, 'flex items-center justify-center font-semibold text-white', generateAvatarColor(name))}>
             {getInitials(name)}
           </span>
         ) : (
