@@ -1,9 +1,6 @@
-import { auth } from '@/auth'
-import { redirect } from 'next/navigation'
+// Autenticação garantida pelo middleware (src/middleware.ts)
 import { CopilotView } from '@/components/dashboard/CopilotView'
 
-export default async function CopilotoPage() {
-  const session = await auth()
-  if (!session) redirect('/login')
+export default function CopilotoPage() {
   return <CopilotView />
 }

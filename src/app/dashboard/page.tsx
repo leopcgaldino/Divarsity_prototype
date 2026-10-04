@@ -1,9 +1,6 @@
-import { auth } from '@/auth'
-import { redirect } from 'next/navigation'
+// Autenticação garantida pelo middleware (src/middleware.ts)
 import { DashboardHome } from '@/components/dashboard/DashboardHome'
 
-export default async function DashboardPage() {
-  const session = await auth()
-  if (!session) redirect('/login')
+export default function DashboardPage() {
   return <DashboardHome />
 }

@@ -1,13 +1,18 @@
 'use client'
 
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
-import { useSession } from 'next-auth/react'
+import { useAppSession } from '@/hooks/useAppSession'
 import { Settings, User as UserIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export function SettingsView() {
-  const { data: session } = useSession()
+  const { data: session } = useAppSession()
   const [name, setName] = useState(session?.user?.name ?? '')
+
+  // A sessão do Supabase carrega de forma assíncrona: preenche o nome quando disponível
+  useEffect(() => {
+    if (session?.user?.name) setName((current) => current || session.user.name || '')
+  }, [session?.user?.name])
   const [saved, setSaved] = useState(false)
 
   const handleSave = async () => {

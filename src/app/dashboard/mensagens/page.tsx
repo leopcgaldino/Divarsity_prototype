@@ -1,9 +1,6 @@
-import { auth } from '@/auth'
-import { redirect } from 'next/navigation'
+// Autenticação garantida pelo middleware (src/middleware.ts)
 import { PlaceholderPage } from '@/components/dashboard/PlaceholderPage'
 
-export default async function MensagensPage() {
-  const session = await auth()
-  if (!session) redirect('/login')
+export default function MensagensPage() {
   return <PlaceholderPage title="Mensagens" description="Converse com recrutadores e outros profissionais." icon="message" />
 }

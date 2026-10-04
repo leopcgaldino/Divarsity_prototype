@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useSession, signOut } from 'next-auth/react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useAppSession } from '@/hooks/useAppSession'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Menu,
@@ -40,7 +40,8 @@ export function Header({
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
-  const { data: session } = useSession()
+  const { data: session, signOut } = useAppSession()
+  const router = useRouter()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -53,7 +54,7 @@ export function Header({
   }, [pathname])
 
   const handleSignOut = () => {
-    signOut({ redirectTo: '/' })
+    void signOut().then(() => router.push('/'))
   }
 
   return (

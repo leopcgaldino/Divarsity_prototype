@@ -1,9 +1,6 @@
-import { auth } from '@/auth'
-import { redirect } from 'next/navigation'
+// Autenticação garantida pelo middleware (src/middleware.ts)
 import { OpportunityList } from '@/components/dashboard/OpportunityList'
 
-export default async function BicosPage() {
-  const session = await auth()
-  if (!session) redirect('/login')
+export default function BicosPage() {
   return <OpportunityList type="BICO" title="Bicos" />
 }

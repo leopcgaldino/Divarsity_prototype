@@ -1,7 +1,7 @@
 'use client'
 
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
-import { useSession } from 'next-auth/react'
+import { useAppSession } from '@/hooks/useAppSession'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -33,7 +33,7 @@ interface Opportunity {
 }
 
 export function DashboardHome() {
-  const { data: session } = useSession()
+  const { data: session } = useAppSession()
   const [opportunities, setOpportunities] = useState<Opportunity[]>([])
   const [loading, setLoading] = useState(true)
 

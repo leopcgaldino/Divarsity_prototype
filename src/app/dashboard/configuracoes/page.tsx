@@ -1,9 +1,6 @@
-import { auth } from '@/auth'
-import { redirect } from 'next/navigation'
+// Autenticação garantida pelo middleware (src/middleware.ts)
 import { SettingsView } from '@/components/dashboard/SettingsView'
 
-export default async function ConfiguracoesPage() {
-  const session = await auth()
-  if (!session) redirect('/login')
+export default function ConfiguracoesPage() {
   return <SettingsView />
 }
