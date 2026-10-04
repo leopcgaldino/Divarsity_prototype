@@ -1,279 +1,305 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter, usePathname } from 'next/navigation'
-import { Transition } from '@headlessui/react'
+import { usePathname } from 'next/navigation'
+import { useSession, signOut } from 'next-auth/react'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
-  MagnifyingGlassIcon,
-  BellIcon,
-  UserCircleIcon,
-  Bars3Icon,
-  XMarkIcon,
-  SunIcon,
-  MoonIcon,
-  HomeIcon,
-  BriefcaseIcon,
-  ComputerDesktopIcon,
-  WrenchScrewdriverIcon,
-  UsersIcon,
-  ChatBubbleLeftRightIcon,
-  SparklesIcon,
-  Cog6ToothIcon,
-  CreditCardIcon,
-  ArrowRightOnRectangleIcon,
-  ChevronDownIcon,
-} from '@heroicons/react/24/outline'
+  Menu,
+  X,
+  Search,
+  Bell,
+  ChevronDown,
+  LogOut,
+  Settings,
+  User as UserIcon,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Button, Avatar, Dropdown } from '@/components/ui'
-import { useAuth } from '@/hooks/useAuth'
-import { useTheme } from '@/hooks/useTheme'
-import { Logo } from './Logo'
 
-const navigation = [
-  { name: 'Início', href: '/dashboard', icon: HomeIcon },
-  { name: 'Vagas', href: '/dashboard?tab=vagas', icon: BriefcaseIcon },
-  { name: 'Freelances', href: '/dashboard?tab=freelances', icon: ComputerDesktopIcon },
-  { name: 'Bicos', href: '/dashboard?tab=bicos', icon: WrenchScrewdriverIcon },
-  { name: 'Minha Rede', href: '/connections', icon: UsersIcon },
-  { name: 'Mensagens', href: '/messages', icon: ChatBubbleLeftRightIcon },
-  { name: 'Copiloto IA', href: '/copilot', icon: SparklesIcon },
-]
+export interface NavItem {
+  label: string
+  href: string
+  icon?: React.ReactNode
+}
 
-const publicNavigation = [
-  { name: 'Oportunidades', href: '/#recursos' },
-  { name: 'Como funciona', href: '/#como-funciona' },
-  { name: 'Planos', href: '/#planos' },
-  { name: 'Para empresas', href: '/enterprise' },
-]
+interface HeaderProps {
+  navItems?: NavItem[]
+  variant?: 'landing' | 'dashboard'
+  showSearch?: boolean
+  showNotifications?: boolean
+}
 
-export function Header() {
-  const router = useRouter()
+export function Header({
+  navItems = [],
+  variant = 'landing',
+  showSearch = false,
+  showNotifications = false,
+}: HeaderProps) {
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
-  const { user, profile, signOut } = useAuth()
-  const { theme, resolvedTheme, setTheme } = useTheme()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
+  const { data: session } = useSession()
 
-  const darkMode = resolvedTheme === 'dark'
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10)
+    window.addEventListener('scroll', onScroll)
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
-  const cycleTheme = () => {
-    if (theme === 'light') setTheme('dark')
-    else if (theme === 'dark') setTheme('system')
-    else setTheme('light')
+  useEffect(() => {
+    setMobileOpen(false)
+  }, [pathname])
+
+  const handleSignOut = () => {
+    signOut({ redirectTo: '/' })
   }
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      window.location.href = `/dashboard?search=${encodeURIComponent(searchQuery.trim())}`
-    }
-  }
-
-  const isActive = (href: string) =>
-    href === '/dashboard' ? pathname === '/dashboard' : pathname.startsWith(href.split('?')[0]) && href.split('?')[0] !== '/dashboard'
-
-  const userMenuItems = [
-    { label: 'Meu Perfil', href: '/profile', icon: <UserCircleIcon className="h-4 w-4" /> },
-    { label: 'Configurações', href: '/settings', icon: <Cog6ToothIcon className="h-4 w-4" /> },
-    { label: 'Minha Assinatura', href: '/subscription', icon: <CreditCardIcon className="h-4 w-4" /> },
-    { divider: true },
-    { label: 'Sair', onClick: signOut, icon: <ArrowRightOnRectangleIcon className="h-4 w-4" />, danger: true },
-  ]
-
-  const iconButton =
-    'rounded-full p-2 text-ink/60 hover:text-ink hover:bg-ink/5 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500'
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40">
-      <div className="h-1 w-full bg-pride-stripe" aria-hidden="true" />
-      <div className="bg-cream/80 dark:bg-gray-950/80 backdrop-blur-xl border-b border-ink/5 dark:border-white/10">
-        <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Navegação principal">
-          <div className="flex h-16 items-center justify-between gap-4">
-            <Logo href={user ? '/dashboard' : '/'} size="sm" />
+    <>
+      <header
+        className={cn(
+          'sticky top-0 z-50 w-full transition-all duration-200',
+          scrolled
+            ? 'bg-background/90 backdrop-blur-md border-b shadow-sm'
+            : 'bg-background/70 backdrop-blur-sm border-b border-transparent'
+        )}
+      >
+        {/* Pride strip */}
+        <div className="h-1 pride-gradient w-full" />
 
-            {user ? (
-              <div className="hidden lg:flex lg:items-center lg:gap-1">
-                {navigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={cn(
-                      'flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-colors',
-                      isActive(item.href)
-                        ? 'bg-ink text-white dark:bg-white dark:text-ink'
-                        : 'text-ink/70 hover:text-ink hover:bg-ink/5 dark:text-gray-300 dark:hover:bg-white/10'
-                    )}
-                    aria-current={isActive(item.href) ? 'page' : undefined}
-                  >
-                    <item.icon className="h-4 w-4" aria-hidden="true" />
-                    {item.name}
-                  </Link>
-                ))}
+        <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
+          <div className="flex h-14 items-center justify-between gap-4">
+            {/* Logo */}
+            <Link href={session ? '/dashboard' : '/'} className="flex items-center gap-2 shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+                <span className="text-primary-foreground font-display font-bold text-sm">D</span>
               </div>
-            ) : (
-              <div className="hidden md:flex md:items-center md:gap-1">
-                {publicNavigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="px-3 py-2 rounded-full text-sm font-medium text-ink/70 hover:text-ink hover:bg-ink/5 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10 transition-colors"
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-            )}
+              <span className="font-display font-bold text-lg tracking-tight hidden sm:inline">
+                Divarsity
+              </span>
+            </Link>
 
-            <div className="hidden md:flex md:items-center md:gap-2">
-              {user && (
-                <form onSubmit={handleSearch} className="relative hidden xl:block" role="search">
-                  <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink/40" aria-hidden="true" />
-                  <input
-                    type="search"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Buscar oportunidades"
-                    className="w-52 pl-9 pr-4 py-2 rounded-full border border-ink/10 bg-white dark:border-gray-700 dark:bg-gray-900 text-sm text-ink dark:text-gray-100 placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    aria-label="Buscar oportunidades"
-                  />
-                </form>
-              )}
+            {/* Desktop nav */}
+            <nav className="hidden lg:flex items-center gap-1 overflow-x-auto scrollbar-none">
+              {navItems?.map((item: NavItem) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    'px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1.5',
+                    pathname === item.href
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                  )}
+                >
+                  {item.icon && <span className="w-4 h-4">{item.icon}</span>}
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
 
-              <button
-                onClick={cycleTheme}
-                className={iconButton}
-                aria-label={darkMode ? 'Ativar modo claro' : 'Ativar modo escuro'}
-              >
-                {darkMode ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
-              </button>
-
-              {user ? (
-                <>
-                  <button className={cn(iconButton, 'relative')} aria-label="Notificações, 3 não lidas">
-                    <BellIcon className="h-5 w-5" />
-                    <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-magenta-500 ring-2 ring-cream dark:ring-gray-950" aria-hidden="true" />
-                  </button>
-                  <Dropdown
-                    trigger={
-                      <Button variant="ghost" size="sm" className="gap-2 pl-1">
-                        <Avatar
-                          src={profile?.avatar_url}
-                          name={profile?.social_name || user.email}
-                          size="sm"
-                          verificationStatus={profile?.verification_status}
-                          prideBorder={profile?.verification_status === 'verified'}
-                        />
-                        <span className="hidden sm:block text-sm font-medium">
-                          {profile?.social_name?.split(' ')[0] || 'Usuário'}
-                        </span>
-                        <ChevronDownIcon className="h-4 w-4" />
-                      </Button>
-                    }
-                    items={userMenuItems}
-                  />
-                </>
-              ) : (
-                <>
-                  <Button variant="ghost" size="sm" onClick={() => router.push('/login')}>
-                    Entrar
-                  </Button>
-                  <Button variant="primary" size="sm" onClick={() => router.push('/register')}>
-                    Criar conta
-                  </Button>
-                </>
-              )}
-            </div>
-
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className={cn(iconButton, 'md:hidden')}
-              aria-label={mobileMenuOpen ? 'Fechar menu' : 'Abrir menu'}
-              aria-expanded={mobileMenuOpen}
-            >
-              {mobileMenuOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
-            </button>
-          </div>
-
-          <Transition
-            show={mobileMenuOpen}
-            enter="transition ease-out duration-200"
-            enterFrom="opacity-0 -translate-y-2"
-            enterTo="opacity-100 translate-y-0"
-            leave="transition ease-in duration-150"
-            leaveFrom="opacity-100 translate-y-0"
-            leaveTo="opacity-0 -translate-y-2"
-          >
-            <div className="md:hidden py-4 border-t border-ink/10 dark:border-white/10">
-              {user && (
-                <form onSubmit={handleSearch} className="mb-4" role="search">
+            {/* Right section */}
+            <div className="flex items-center gap-2 shrink-0">
+              {showSearch && (
+                <div className="hidden md:flex items-center">
                   <div className="relative">
-                    <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-ink/40" aria-hidden="true" />
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <input
-                      type="search"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Buscar vagas, freelas, bicos..."
-                      className="w-full pl-10 pr-4 py-3 rounded-full border border-ink/10 bg-white dark:border-gray-700 dark:bg-gray-900 text-ink dark:text-gray-100 placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                      aria-label="Buscar oportunidades"
+                      type="text"
+                      placeholder="Buscar oportunidades..."
+                      className="pl-9 pr-3 py-1.5 text-sm rounded-lg border bg-muted/50 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/30 w-48 lg:w-64 transition-all"
                     />
                   </div>
-                </form>
+                </div>
               )}
 
-              <div className="flex flex-col gap-1 mb-4">
-                {(user ? navigation : publicNavigation).map((item) => {
-                  const Icon = 'icon' in item ? (item.icon as typeof HomeIcon) : null
-                  return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={cn(
-                        'flex items-center gap-3 px-4 py-3 rounded-2xl text-base font-medium transition-colors',
-                        user && isActive(item.href)
-                          ? 'bg-ink text-white dark:bg-white dark:text-ink'
-                          : 'text-ink/80 hover:bg-ink/5 dark:text-gray-300 dark:hover:bg-white/10'
-                      )}
-                    >
-                      {Icon && <Icon className="h-5 w-5" aria-hidden="true" />}
-                      {item.name}
-                    </Link>
-                  )
-                })}
+              {showNotifications && session && (
+                <button className="relative p-2 rounded-lg hover:bg-accent transition-colors">
+                  <Bell className="w-5 h-5 text-muted-foreground" />
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
+                </button>
+              )}
+
+              {session ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-accent transition-colors"
+                  >
+                    <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center">
+                      <span className="text-xs font-semibold text-primary">
+                        {session.user?.name?.charAt?.(0)?.toUpperCase?.() ?? 'U'}
+                      </span>
+                    </div>
+                    <ChevronDown className="w-3.5 h-3.5 text-muted-foreground hidden sm:block" />
+                  </button>
+
+                  <AnimatePresence>
+                    {userMenuOpen && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-40"
+                          onClick={() => setUserMenuOpen(false)}
+                        />
+                        <motion.div
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -4 }}
+                          className="absolute right-0 top-full mt-1 w-56 bg-popover border rounded-lg z-50"
+                          style={{ boxShadow: 'var(--shadow-lg)' }}
+                        >
+                          <div className="p-3 border-b">
+                            <p className="font-medium text-sm truncate">
+                              {session.user?.name ?? 'Usuário'}
+                            </p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {session.user?.email ?? ''}
+                            </p>
+                          </div>
+                          <div className="p-1">
+                            <Link
+                              href="/dashboard/configuracoes"
+                              onClick={() => setUserMenuOpen(false)}
+                              className="flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-accent transition-colors"
+                            >
+                              <Settings className="w-4 h-4" /> Configurações
+                            </Link>
+                            <button
+                              onClick={handleSignOut}
+                              className="flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-destructive/10 hover:text-destructive transition-colors w-full text-left"
+                            >
+                              <LogOut className="w-4 h-4" /> Sair
+                            </button>
+                          </div>
+                        </motion.div>
+                      </>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Link
+                    href="/login"
+                    className="px-3 py-1.5 text-sm font-medium rounded-lg hover:bg-accent transition-colors"
+                  >
+                    Entrar
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="px-3 py-1.5 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                  >
+                    Cadastrar
+                  </Link>
+                </div>
+              )}
+
+              {/* Mobile hamburger */}
+              {navItems?.length > 0 && (
+                <button
+                  onClick={() => setMobileOpen(!mobileOpen)}
+                  className="lg:hidden p-2 rounded-lg hover:bg-accent transition-colors"
+                  aria-label="Menu"
+                >
+                  {mobileOpen ? (
+                    <X className="w-5 h-5" />
+                  ) : (
+                    <Menu className="w-5 h-5" />
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile drawer */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+              onClick={() => setMobileOpen(false)}
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="fixed right-0 top-0 bottom-0 z-50 w-72 max-w-[80vw] bg-background border-l overflow-y-auto lg:hidden"
+              style={{ boxShadow: 'var(--shadow-lg)' }}
+            >
+              <div className="flex items-center justify-between p-4 border-b">
+                <span className="font-display font-bold text-lg">Menu</span>
+                <button
+                  onClick={() => setMobileOpen(false)}
+                  className="p-1.5 rounded-lg hover:bg-accent"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
 
-              <div className="flex flex-col gap-2 pt-4 border-t border-ink/10 dark:border-white/10">
-                <Button variant="outline" className="w-full justify-start gap-3" onClick={() => { cycleTheme(); setMobileMenuOpen(false) }}>
-                  {darkMode ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
-                  {darkMode ? 'Modo claro' : 'Modo escuro'}
-                </Button>
-                {user ? (
-                  <>
-                    <Button variant="outline" className="w-full justify-start gap-3" onClick={() => { router.push('/profile'); setMobileMenuOpen(false) }}>
-                      <UserCircleIcon className="h-5 w-5" />
-                      Meu Perfil
-                    </Button>
-                    <Button variant="destructive" className="w-full justify-start gap-3" onClick={() => { signOut(); setMobileMenuOpen(false) }}>
-                      <ArrowRightOnRectangleIcon className="h-5 w-5" />
-                      Sair
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button variant="outline" className="w-full" onClick={() => { router.push('/login'); setMobileMenuOpen(false) }}>
-                      Entrar
-                    </Button>
-                    <Button variant="pride" className="w-full" onClick={() => { router.push('/register'); setMobileMenuOpen(false) }}>
-                      Criar conta gratuita
-                    </Button>
-                  </>
-                )}
-              </div>
-            </div>
-          </Transition>
-        </nav>
-      </div>
-    </header>
+              {showSearch && (
+                <div className="p-4 border-b">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <input
+                      type="text"
+                      placeholder="Buscar..."
+                      className="pl-9 pr-3 py-2 text-sm rounded-lg border bg-muted/50 w-full focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <nav className="p-2">
+                {navItems?.map((item: NavItem) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                      pathname === item.href
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                    )}
+                  >
+                    {item.icon && <span className="w-5 h-5">{item.icon}</span>}
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+
+              {session && (
+                <div className="mt-auto p-4 border-t">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center">
+                      <span className="text-sm font-semibold text-primary">
+                        {session.user?.name?.charAt?.(0)?.toUpperCase?.() ?? 'U'}
+                      </span>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm truncate">{session.user?.name ?? 'Usuário'}</p>
+                      <p className="text-xs text-muted-foreground truncate">{session.user?.email ?? ''}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleSignOut}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-destructive hover:bg-destructive/10 rounded-lg w-full transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" /> Sair
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   )
 }
