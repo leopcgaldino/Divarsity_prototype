@@ -59,14 +59,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => authSubscription.unsubscribe()
   }, [])
 
+  // src/types/supabase.ts is stale relative to the migrations (e.g. profiles.user_id exists in SQL), so cast until types are regenerated.
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
       .from('profiles')
       .select('*')
-      .eq('user_id', userId)
+      .eq('user_id' as never, userId)
       .single()
     
-    if (data) setProfile(data as Profile)
+    if (data) setProfile(data as unknown as Profile)
   }
 
   const fetchSubscription = async (userId: string) => {
@@ -81,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return
     }
     
-    if (data) setSubscription(data as Subscription)
+    if (data) setSubscription(data as unknown as Subscription)
     else setSubscription(null)
   }
 
