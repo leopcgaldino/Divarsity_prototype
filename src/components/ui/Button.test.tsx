@@ -24,15 +24,15 @@ describe('Button', () => {
   it('applies variant classes', () => {
     render(<Button variant="outline">Outline</Button>)
     const button = screen.getByRole('button')
-    expect(button).toHaveClass('border-2')
-    expect(button).toHaveClass('border-primary-600')
-    expect(button).toHaveClass('text-primary-600')
+    expect(button).toHaveClass('border')
+    expect(button).toHaveClass('border-ink/20')
+    expect(button).toHaveClass('text-ink')
   })
 
   it('applies size classes', () => {
     render(<Button size="sm">Pequeno</Button>)
     const button = screen.getByRole('button')
-    expect(button).toHaveClass('px-3')
+    expect(button).toHaveClass('px-3.5')
     expect(button).toHaveClass('py-1.5')
     expect(button).toHaveClass('text-sm')
   })
