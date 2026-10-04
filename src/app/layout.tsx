@@ -3,6 +3,7 @@ import { Inter, Bricolage_Grotesque } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/hooks/useAuth'
 import { ThemeProvider } from '@/hooks/useTheme'
+import { GlobalChatWidget } from '@/components/chat/GlobalChatWidget'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -83,6 +84,7 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             {children}
+            <GlobalChatWidget />
           </AuthProvider>
         </ThemeProvider>
       </body>

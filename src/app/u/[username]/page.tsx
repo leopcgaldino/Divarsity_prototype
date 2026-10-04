@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { createClient, createUntypedClient } from '@/lib/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
+import { openChat } from '@/lib/chat/events'
 import { Button, Card, Badge, Avatar, CardHeader, CardContent } from '@/components/ui'
 import { MainLayout } from '@/components/layout/MainLayout'
 import { 
@@ -108,10 +109,11 @@ export default function PublicProfilePage({ params }: ProfilePageProps) {
 
   const handleMessage = () => {
     if (!user) {
-      router.push('/login?redirect=/messages')
+      router.push('/login?redirect=/u/' + params.username)
       return
     }
-    router.push('/messages/' + profile?.id)
+    // Abre o widget de chat (canto inferior esquerdo) já na conversa com este perfil
+    if (profile?.id) openChat({ profileId: profile.id })
   }
 
   const formatDate = (dateStr: string) => {

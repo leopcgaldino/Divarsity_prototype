@@ -23,7 +23,6 @@ import {
 import { cn } from '@/lib/utils'
 import { Avatar as UIAvatar } from '@/components/ui'
 import { useRouter } from 'next/navigation'
-import { ChatWidget } from './ChatWidget'
 
 const navigation = [
   { name: 'Início', href: '/dashboard', icon: HomeIcon, label: 'Início' },
@@ -362,8 +361,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         </div>
       </main>
 
-      {/* Chat Widget */}
-      <ChatWidget />
 
     </div>
   )
