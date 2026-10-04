@@ -1,0 +1,320 @@
+﻿'use client'
+
+import { useState, useEffect, useRef } from 'react'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useAuth } from '@/hooks/useAuth'
+import { Button, Avatar, Badge, Input, Textarea } from '@/components/ui'
+import { toastHelpers } from '@/components/ui/Toast'
+import { 
+  HomeIcon,
+  UsersIcon,
+  BriefcaseIcon,
+  ChatBubbleLeftRightIcon,
+  BellIcon,
+  UserCircleIcon,
+  ChevronDownIcon,
+  MagnifyingGlassIcon,
+  PhotoIcon,
+  VideoCameraIcon,
+  CalendarIcon,
+  PencilIcon,
+  EllipsisHorizontalIcon,
+  HeartIcon,
+  ChatBubbleLeftRightIcon as ChatIcon,
+  ShareIcon,
+  PaperAirplaneIcon,
+  BookmarkIcon,
+  FlagIcon,
+  BriefcaseIcon as WorkIcon,
+  GlobeAltIcon,
+  LockClosedIcon,
+  XMarkIcon,
+  ArrowRightOnRectangleIcon,
+  CheckIcon,
+  PencilAltIcon,
+} from '@heroicons/react/24/outline'
+import { cn } from '@/lib/utils'
+import { ChatWidget } from './ChatWidget'
+
+// Mock data for feed
+const mockPosts = [
+  {
+    id: '1',
+    author: {
+      name: 'Maria Silva',
+      role: 'Senior Frontend Developer',
+      company: 'TechCorp',
+      avatar: undefined,
+      verified: true,
+    },
+    time: '2h',
+    content: 'Acabei de lanÃ§ar minha nova biblioteca open-source para React! ðŸš€ Depois de meses de trabalho, finalmente estÃ¡ pronta para a comunidade. AgradeÃ§o todo o apoio da equipe da TechCorp durante o desenvolvimento.',
+    image: undefined,
+    stats: { likes: 142, comments: 23, shares: 12 },
+    liked: false,
+  },
+  {
+    id: '2',
+    author: {
+      name: 'JoÃ£o Santos',
+      role: 'Product Manager',
+      company: 'StartupXYZ',
+      avatar: undefined,
+      verified: false,
+    },
+    time: '5h',
+    content: 'Refletindo sobre a importÃ¢ncia de mÃ©tricas de produto bem definidas. NÃ£o adianta ter dados se nÃ£o sabemos quais perguntas estamos tentando responder. Quais mÃ©tricas vocÃªs consideram essenciais?',
+    image: undefined,
+    stats: { likes: 89, comments: 45, shares: 8 },
+    liked: true,
+  },
+  {
+    id: '3',
+    author: {
+      name: 'Ana Costa',
+      role: 'UX Designer',
+      company: 'DesignStudio',
+      avatar: undefined,
+      verified: true,
+    },
+    time: '1d',
+    content: 'Novo case study no ar! ðŸŽ¨ Redesenhamos completamente o fluxo de onboarding de um app fintech e aumentamos a conversÃ£o em 34%. Link nos comentÃ¡rios.',
+    image: undefined,
+    stats: { likes: 267, comments: 31, shares: 28 },
+    liked: false,
+  },
+]
+
+const mockSuggestions = [
+  { id: '1', name: 'Carlos Oliveira', role: 'Backend Developer', company: 'DevTech', mutual: 12, avatar: undefined, verified: true },
+  { id: '2', name: 'Fernanda Lima', role: 'Data Scientist', company: 'DataCorp', mutual: 8, avatar: undefined, verified: false },
+  { id: '3', name: 'Roberto Alves', role: 'DevOps Engineer', company: 'CloudInc', mutual: 5, avatar: undefined, verified: true },
+  { id: '4', name: 'PatrÃ­cia Souza', role: 'QA Lead', company: 'QualityFirst', mutual: 3, avatar: undefined, verified: false },
+]
+
+const mockNews = [
+  { id: '1', title: 'IA generativa revoluciona desenvolvimento de software em 2024', source: 'TechNews' },
+  { id: '2', title: 'Mercado de trabalho tech aquece: vagas aumentam 40% no Brasil', source: 'CarreiraDev' },
+  { id: '3', title: 'Nova versÃ£o do React 19 traz melhorias de performance', source: 'ReactBrasil' },
+  { id: '5', title: 'LGPD completa 5 anos: impacto nas empresas de tecnologia', source: 'JuridicoTech' },
+]
+
+const navigationItems = [
+  { id: 'home', label: 'InÃ­cio', icon: HomeIcon, href: '/dashboard' },
+  { id: 'network', label: 'Minha rede', icon: UsersIcon, href: '/connections' },
+  { id: 'jobs', label: 'Vagas', icon: BriefcaseIcon, href: '/dashboard?vagas' },
+  { id: 'messages', label: 'Mensagens', icon: ChatBubbleLeftRightIcon, href: '/messages', badge: 3 },
+  { id: 'notifications', label: 'NotificaÃ§Ãµes', icon: BellIcon, href: '/notifications', badge: 5 },
+]
+
+const postActions = [
+  { id: 'like', label: 'Gostei', icon: HeartIcon, color: 'text-red-500' },
+  { id: 'comment', label: 'Comentar', icon: ChatIcon, color: 'text-gray-600' },
+  { id: 'share', label: 'Compartilhar', icon: ShareIcon, color: 'text-gray-600' },
+  { id: 'send', label: 'Enviar', icon: PaperAirplaneIcon, color: 'text-gray-600' },
+]
+
+const createPostOptions = [
+  { id: 'photo', label: 'Foto', icon: PhotoIcon, color: 'text-green-600' },
+  { id: 'video', label: 'VÃ­deo', icon: VideoCameraIcon, color: 'text-purple-600' },
+  { id: 'event', label: 'Evento', icon: CalendarIcon, color: 'text-orange-600' },
+  { id: 'article', label: 'Escrever artigo', icon: PencilIcon, color: 'text-blue-600' },
+]
+
+export function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { user, profile, signOut } = useAuth()
+  const pathname = usePathname()
+  const router = useRouter()
+  const [isMobile, setIsMobile] = useState(false)
+  const [isTablet, setIsTablet] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [showCreatePost, setShowCreatePost] = useState(false)
+  const [leftSidebarOpen, setLeftSidebarOpen] = useState(false)
+  const [rightSidebarOpen, setRightSidebarOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState<'home' | 'network' | 'jobs' | 'messages' | 'notifications'>('home')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [newPostContent, setNewPostContent] = useState('')
+  const [postMediaType, setPostMediaType] = useState<'photo' | 'video' | 'event' | 'article' | null>(null)
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set())
+  const [postMenusOpen, setPostMenusOpen] = useState<Set<string>>(new Set())
+  const [connectingUsers, setConnectingUsers] = useState<Set<string>>(new Set())
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  const postTextareaRef = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    const checkSize = () => {
+      setIsMobile(window.innerWidth < 640)
+      setIsTablet(window.innerWidth >= 640 && window.innerWidth < 1024)
+    }
+    checkSize()
+    window.addEventListener('resize', checkSize)
+    return () => window.removeEventListener('resize', checkSize)
+  }, [])
+
+  // Handlers
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      toastHelpers.info(`Buscando por: "${searchQuery}"`)
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+    }
+  }
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+  }
+
+  const handleCreatePostToggle = () => {
+    setShowCreatePost(!showCreatePost)
+    if (!showCreatePost) {
+      setTimeout(() => postTextareaRef.current?.focus(), 100)
+    }
+  }
+
+  const handlePostMediaSelect = (type: 'photo' | 'video' | 'event' | 'article') => {
+    setPostMediaType(prev => prev === type ? null : type)
+    toastHelpers.info(`${type === 'photo' ? 'Foto' : type === 'video' ? 'VÃ­deo' : type === 'event' ? 'Evento' : 'Artigo'} selecionado`)
+  }
+
+  const handlePublishPost = () => {
+    if (!newPostContent.trim() && !postMediaType) {
+      toastHelpers.error('Escreva algo ou adicione mÃ­dia para publicar')
+      return
+    }
+    
+    // Simulate API call
+    toastHelpers.success('PublicaÃ§Ã£o criada com sucesso! ðŸŽ‰')
+    setNewPostContent('')
+    setPostMediaType(null)
+    setShowCreatePost(false)
+    
+    // In a real app, this would call an API
+    console.log('Post published:', { content: newPostContent, mediaType: postMediaType })
+  }
+
+  const handleLikePost = (postId: string) => {
+    setLikedPosts(prev => {
+      const next = new Set(prev)
+      if (next.has(postId)) {
+        next.delete(postId)
+        toastHelpers.info('ReaÃ§Ã£o removida')
+      } else {
+        next.add(postId)
+        toastHelpers.success('ReaÃ§Ã£o adicionada! â¤ï¸')
+      }
+      return next
+    })
+  }
+
+  const handleComment = (postId: string) => {
+    toastHelpers.info('Abrindo comentÃ¡rios...')
+    // In a real app, open comment modal or navigate
+    console.log('Comment on post:', postId)
+  }
+
+  const handleShare = (postId: string) => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'Divarsity',
+        text: 'Confira esta publicaÃ§Ã£o no Divarsity!',
+        url: window.location.href,
+      })
+    } else {
+      navigator.clipboard.writeText(window.location.href)
+      toastHelpers.success('Link copiado! ðŸ“‹')
+    }
+  }
+
+  const handleSend = (postId: string) => {
+    toastHelpers.info('Enviando por mensagem...')
+    console.log('Send post:', postId)
+  }
+
+  const handlePostMenuToggle = (postId: string) => {
+    setPostMenusOpen(prev => {
+      const next = new Set(prev)
+      if (next.has(postId)) next.delete(postId)
+      else next.add(postId)
+      return next
+    })
+  }
+
+  const handleConnect = (userId: string, userName: string) => {
+    if (connectingUsers.has(userId)) return
+    
+    setConnectingUsers(prev => new Set([...prev, userId]))
+    
+    // Simulate API call
+    setTimeout(() => {
+      setConnectingUsers(prev => {
+        const next = new Set(prev)
+        next.delete(userId)
+        return next
+      })
+      toastHelpers.success(`Convite enviado para ${userName}! ðŸ¤`)
+    }, 1000)
+  }
+
+  const handleProfileClick = () => {
+    router.push('/profile')
+    setUserMenuOpen(false)
+  }
+
+  const handleSettingsClick = () => {
+    router.push('/settings')
+    setUserMenuOpen(false)
+  }
+
+  const handleSignOut = async () => {
+    setUserMenuOpen(false)
+    toastHelpers.info('Saindo...')
+    await signOut()
+    router.push('/login')
+    router.refresh()
+  }
+
+  const handlePostMenuAction = (action: string, postId: string) => {
+    setPostMenusOpen(prev => { const next = new Set(prev); next.delete(postId); return next })
+    switch (action) {
+      case 'edit':
+        toastHelpers.info('Editar publicaÃ§Ã£o')
+        break
+      case 'delete':
+        toastHelpers.warning('PublicaÃ§Ã£o excluÃ­da')
+        break
+      case 'save':
+        toastHelpers.success('Salvo nos itens salvos! ðŸ”–')
+        break
+      case 'report':
+        toastHelpers.info('DenÃºncia enviada')
+        break
+    }
+  }
+
+  const handleMobileNavClick = (href: string) => {
+    router.push(href)
+  }
+
+  // Close menus on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (userMenuOpen && !e.composedPath().includes(document.querySelector('[aria-label="Menu do usuÃ¡rio"]'))) {
+        setUserMenuOpen(false)
+      }
+      if (showCreatePost && !e.composedPath().includes(postTextareaRef.current)) {
+        // Only close if clicking outside the create post area
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [userMenuOpen, showCreatePost])
+
+  const userInitials = profile?.social_name 
+    ? profile.social_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+    : user?.email?.[0]?.toUpperCase() || 'U'
+
+  return (
+    <div className="min-h-screen bg-[#F3F2EF] flex flex-col">
+      {/* Top Bar - Fixed */}

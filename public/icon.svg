@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="prideGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF0018"/>
+      <stop offset="16.66%" stop-color="#FFA52C"/>
+      <stop offset="33.33%" stop-color="#FFFF41"/>
+      <stop offset="50%" stop-color="#008018"/>
+      <stop offset="66.66%" stop-color="#0000F9"/>
+      <stop offset="83.33%" stop-color="#86007D"/>
+      <stop offset="100%" stop-color="#FF0018"/>
+    </linearGradient>
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c4dff"/>
+      <stop offset="100%" stop-color="#5b21b6"/>
+    </linearGradient>
+  </defs>
+  <!-- Background circle with pride gradient border -->
+  <circle cx="50" cy="50" r="48" fill="url(#primaryGradient)" />
+  <!-- Letter D -->
+  <text x="50" y="62" font-family="system-ui, sans-serif" font-size="56" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">D</text>
+  <!-- Small pride accent -->
+  <circle cx="50" cy="50" r="46" fill="none" stroke="url(#prideGradient)" stroke-width="2" stroke-dasharray="10 5" opacity="0.6"/>
+</svg>
