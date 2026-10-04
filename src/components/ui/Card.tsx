@@ -12,10 +12,10 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 export const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'default', padding = 'md', hover = false, children, ...props }, ref) => {
     const variants = {
-      default: 'bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700',
-      outlined: 'bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700',
-      elevated: 'bg-white dark:bg-gray-900 shadow-lg border-none',
-      pride: 'bg-white dark:bg-gray-900 border border-transparent bg-gradient-to-r from-pride-red/10 via-pride-orange/10 via-pride-yellow/10 via-pride-green/10 via-pride-blue/10 to-pride-purple/10',
+      default: 'bg-white dark:bg-gray-900 border border-ink/10 dark:border-gray-800',
+      outlined: 'bg-white dark:bg-gray-900 border border-ink/15 dark:border-gray-700',
+      elevated: 'bg-white dark:bg-gray-900 shadow-soft border border-ink/5 dark:border-gray-800',
+      pride: 'bg-ink text-white border border-ink dark:bg-gray-900 dark:border-gray-700',
     }
 
     const paddings = {
@@ -29,7 +29,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cn(
-          'rounded-2xl transition-all duration-300',
+          'rounded-3xl transition-all duration-300',
           variants[variant],
           paddings[padding],
           hover && 'hover:shadow-xl hover:-translate-y-0.5 cursor-pointer',

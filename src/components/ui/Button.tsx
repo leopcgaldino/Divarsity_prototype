@@ -25,22 +25,22 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     children,
     ...props 
   }, ref) => {
-    const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
+    const baseStyles = 'inline-flex items-center justify-center font-semibold transition-all duration-200 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]'
     
     const variants = {
-      primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-sm hover:shadow-md active:scale-[0.98]',
-      secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-500 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700',
-      outline: 'border-2 border-primary-600 text-primary-600 hover:bg-primary-50 focus:ring-primary-500 dark:border-primary-400 dark:text-primary-400 dark:hover:bg-primary-900/20',
-      ghost: 'text-gray-600 hover:bg-gray-100 focus:ring-gray-500 dark:text-gray-400 dark:hover:bg-gray-800',
-      destructive: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm',
-      pride: 'bg-gradient-to-r from-pride-red via-pride-orange via-pride-yellow via-pride-green via-pride-blue to-pride-purple text-white hover:opacity-90 focus:ring-pride-purple shadow-pride-sm',
+      primary: 'bg-ink text-white hover:bg-ink-soft focus-visible:ring-primary-500 shadow-sm dark:bg-white dark:text-ink dark:hover:bg-gray-100',
+      secondary: 'bg-white text-ink hover:bg-cream-dark focus-visible:ring-gray-500 border border-ink/10 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 dark:hover:bg-gray-700',
+      outline: 'border border-ink/20 text-ink bg-transparent hover:bg-ink/5 hover:border-ink/40 focus-visible:ring-primary-500 dark:border-white/25 dark:text-white dark:hover:bg-white/10',
+      ghost: 'text-ink/70 hover:text-ink hover:bg-ink/5 focus-visible:ring-gray-500 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10',
+      destructive: 'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500 shadow-sm',
+      pride: 'bg-gradient-to-r from-magenta-500 to-primary-600 text-white hover:brightness-110 focus-visible:ring-magenta-500 shadow-pride-sm hover:shadow-pride',
     }
     
     const sizes = {
-      sm: 'px-3 py-1.5 text-sm gap-1.5',
-      md: 'px-4 py-2 text-base gap-2',
-      lg: 'px-6 py-3 text-lg gap-2.5',
-      xl: 'px-8 py-4 text-xl gap-3',
+      sm: 'px-3.5 py-1.5 text-sm gap-1.5',
+      md: 'px-5 py-2.5 text-sm gap-2',
+      lg: 'px-6 py-3 text-base gap-2.5',
+      xl: 'px-8 py-4 text-lg gap-3',
     }
 
     return (

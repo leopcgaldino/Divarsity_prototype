@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { Button, Input, Card } from '@/components/ui'
 import { toastHelpers } from '@/components/ui/Toast'
 import { AuthLayout } from '@/components/layout/MainLayout'
+import { Logo } from '@/components/layout/Logo'
 import { 
   EnvelopeIcon, 
   LockClosedIcon, 
@@ -87,12 +88,7 @@ function LoginPageContent() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-10"
         >
-          <Link href="/" className="inline-flex items-center gap-2 mb-8">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center">
-              <span className="text-white font-bold text-xl">D</span>
-            </div>
-            <span className="font-bold text-2xl text-gray-900 dark:text-white">Divarsity</span>
-          </Link>
+          <Logo size="lg" className="inline-flex mb-8" />
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Bem-vinda de volta</h1>
           <p className="text-gray-600 dark:text-gray-400">
             Entre na sua conta para acessar oportunidades exclusivas
