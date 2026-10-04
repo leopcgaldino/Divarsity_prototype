@@ -134,14 +134,15 @@ export function OpportunityFeed() {
       if (filters.search) {
         query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%,requirements.ilike.%${filters.search}%`)
       }
+      // src/types/supabase.ts is stale relative to the migrations, whose enums match these app values.
       if (filters.type) {
-        query = query.eq('type', filters.type)
+        query = query.eq('type', filters.type as never)
       }
       if (filters.contract_type) {
-        query = query.eq('contract', filters.contract_type)
+        query = query.eq('contract', filters.contract_type as never)
       }
       if (filters.work_modality) {
-        query = query.eq('mode', filters.work_modality)
+        query = query.eq('mode', filters.work_modality as never)
       }
       if (filters.location_city) {
         query = query.ilike('city', `%${filters.location_city}%`)

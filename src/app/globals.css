@@ -18,8 +18,22 @@
   }
 
   body {
-    @apply bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased;
+    @apply bg-cream dark:bg-gray-950 text-ink dark:text-gray-100 antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1, h2, h3 {
+    @apply font-display tracking-tight;
+    text-wrap: balance;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 
   html {
@@ -57,7 +71,24 @@
 
   /* Pride gradient text */
   .pride-text {
-    @apply bg-gradient-to-r from-pride-red via-pride-orange via-pride-yellow via-pride-green via-pride-blue to-pride-purple bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-magenta-500 via-primary-600 to-pride-blue bg-clip-text text-transparent;
+  }
+
+  .dark .pride-text {
+    @apply from-magenta-400 via-primary-400 to-pride-lightBlue;
+  }
+
+  /* Rainbow underline used to highlight a word */
+  .pride-underline {
+    background-image: linear-gradient(90deg, #E40303 0 16.66%, #FF8C00 16.66% 33.33%, #FFED00 33.33% 50%, #008026 50% 66.66%, #24408E 66.66% 83.33%, #732982 83.33% 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 0.18em;
+    background-position: 0 92%;
+    padding-bottom: 0.05em;
+  }
+
+  .pride-stripe {
+    @apply bg-pride-stripe;
   }
 
   /* Pride gradient border */
@@ -129,7 +160,7 @@
 
   /* Button variants */
   .btn-pride {
-    @apply bg-gradient-to-r from-pride-red via-pride-orange via-pride-yellow via-pride-green via-pride-blue to-pride-purple text-white hover:opacity-90 transition-opacity;
+    @apply bg-gradient-to-r from-magenta-500 to-primary-600 text-white hover:opacity-90 transition-opacity;
   }
 
   /* Input focus */
@@ -160,7 +191,7 @@
 
   /* Gradient borders */
   .border-gradient {
-    border-image: linear-gradient(to right, #FF0018, #FFA52C, #FFFF41, #008018, #0000F9, #86007D) 1;
+    border-image: linear-gradient(to right, #E40303, #FF8C00, #FFED00, #008026, #24408E, #732982) 1;
   }
 }
 

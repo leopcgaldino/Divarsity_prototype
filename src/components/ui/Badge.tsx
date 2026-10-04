@@ -33,9 +33,9 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
       success: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
       warning: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300',
       destructive: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-      pride: 'bg-gradient-to-r from-pride-red via-pride-orange via-pride-yellow via-pride-green via-pride-blue to-pride-purple text-white shadow-pride-sm',
-      outline: 'border border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-300 bg-transparent',
-      'pride-outline': 'border-2 border-transparent bg-gradient-to-r from-pride-red via-pride-orange via-pride-yellow via-pride-green via-pride-blue to-pride-purple bg-clip-text text-transparent',
+      pride: 'bg-gradient-to-r from-magenta-500 to-primary-600 text-white shadow-pride-sm',
+      outline: 'border border-ink/15 text-ink/80 dark:border-gray-600 dark:text-gray-300 bg-transparent',
+      'pride-outline': 'border border-white/30 bg-white/10 text-white backdrop-blur',
     }
 
     const sizes = {

@@ -1,7 +1,7 @@
 'use client'
 
-import Link from 'next/link'
 import { ReactNode, useEffect } from 'react'
+import { Logo } from './Logo'
 import { Header } from './Header'
 import { Footer } from './Footer'
 import { Toaster } from '@/components/ui'
@@ -21,9 +21,9 @@ export function MainLayout({ children, showFooter = true }: MainLayoutProps) {
   }, [])
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-950">
+    <div className="min-h-screen flex flex-col bg-cream dark:bg-gray-950">
       <Header />
-      <main className="flex-1 pt-16 pb-8" id="main-content">
+      <main className="flex-1 pt-[68px]" id="main-content">
         {children}
       </main>
       {showFooter && <Footer />}
@@ -45,20 +45,18 @@ export function AuthLayout({ children }: AuthLayoutProps) {
   }, [])
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-950">
-      <header className="fixed top-0 left-0 right-0 z-40 bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-800/50">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <Link href="/" className="flex items-center gap-2" aria-label="Divarsity - Início">
-              <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center">
-                <span className="text-white font-bold text-lg">D</span>
-              </div>
-              <span className="font-bold text-xl text-gray-900 dark:text-white">Divarsity</span>
-            </Link>
+    <div className="min-h-screen flex flex-col bg-cream dark:bg-gray-950">
+      <header className="fixed top-0 left-0 right-0 z-40">
+        <div className="h-1 w-full bg-pride-stripe" aria-hidden="true" />
+        <div className="bg-cream/80 dark:bg-gray-950/80 backdrop-blur-xl border-b border-ink/5 dark:border-white/10">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex h-16 items-center justify-between">
+              <Logo size="sm" />
+            </div>
           </div>
         </div>
       </header>
-      <main className="flex-1 flex items-center justify-center pt-16 pb-8 px-4">
+      <main className="flex-1 flex items-center justify-center pt-24 pb-12 px-4">
         {children}
       </main>
       <Footer />

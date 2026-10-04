@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Bricolage_Grotesque } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/hooks/useAuth'
 import { ThemeProvider } from '@/hooks/useTheme'
@@ -7,6 +7,12 @@ import { ThemeProvider } from '@/hooks/useTheme'
 const inter = Inter({ 
   subsets: ['latin'],
   variable: '--font-inter',
+  display: 'swap',
+})
+
+const display = Bricolage_Grotesque({
+  subsets: ['latin'],
+  variable: '--font-display',
   display: 'swap',
 })
 
@@ -50,7 +56,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: light)', color: '#fbf8f4' },
     { media: '(prefers-color-scheme: dark)', color: '#0f0f1a' },
   ],
   width: 'device-width',
@@ -64,7 +70,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning className={`${inter.variable} font-sans`}>
+    <html lang="pt-BR" suppressHydrationWarning className={`${inter.variable} ${display.variable} font-sans`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -73,7 +79,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className="min-h-screen bg-white dark:bg-gray-950">
+      <body className="min-h-screen bg-cream dark:bg-gray-950">
         <ThemeProvider>
           <AuthProvider>
             {children}
